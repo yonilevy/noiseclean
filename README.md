@@ -1,11 +1,14 @@
-noiseclean
-==========
+# noiseclean
 
 A simple bash script to remove audio noise from audio and video files.
 
-Usage example:
-```
-yoni@nicki:noiseclean → master ./noiseclean.sh intro.mp4 intro_cleaned.mp4
+## Requirements
+- [ffmpeg](http://sox.sourceforge.net/)
+- [sox](http://sox.sourceforge.net/)
+
+## Usage example:
+```bash
+$ ./noiseclean.sh intro.mp4 intro_cleaned.mp4
 Detected 'intro.mp4' as a video file
 Sample noise start time [00:00:00]:
 Sample noise end time [00:00:00.500]:
