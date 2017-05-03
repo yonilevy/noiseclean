@@ -62,6 +62,8 @@ echo "Cleaning noise on '$1'..."
 if [ $isVideo -eq "1" ]; then
     ffmpeg -v warning -y -i "$1" -qscale:v 0 -vcodec copy -an "$tmpVidFile"
     ffmpeg -v warning -y -i "$1" -qscale:a 0 "$tmpAudFile"
+else
+    cp "$1" "$tmpAudFile"
 fi
 ffmpeg -v warning -y -i "$1" -vn -ss "$sampleStart" -t "$sampleEnd" "$noiseAudFile"
 sox "$noiseAudFile" -n noiseprof "$noiseProfFile"
