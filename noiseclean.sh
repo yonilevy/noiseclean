@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 usage ()
 {
     echo 'Usage : noiseclean.sh <input video file> <output video file>'
@@ -60,16 +62,21 @@ tmpAudCleanFile="/tmp/noiseclean_tmpaud-clean.wav"
 echo "Cleaning noise on '$1'..."
 
 if [ $isVideo -eq "1" ]; then
+    echo "Demux audio and video"
     ffmpeg -v warning -y -i "$1" -qscale:v 0 -vcodec copy -an "$tmpVidFile"
     ffmpeg -v warning -y -i "$1" -qscale:a 0 "$tmpAudFile"
 else
     cp "$1" "$tmpAudFile"
 fi
+echo "Extract audio noise sample"
 ffmpeg -v warning -y -i "$1" -vn -ss "$sampleStart" -t "$sampleEnd" "$noiseAudFile"
+echo "Create noise profile"
 sox "$noiseAudFile" -n noiseprof "$noiseProfFile"
+echo "Reduce noise throughout audio recording"
 sox "$tmpAudFile" "$tmpAudCleanFile" noisered "$noiseProfFile" "$sensitivity"
 if [ $isVideo -eq "1" ]; then
-    ffmpeg -v warning -y -i "$tmpAudCleanFile" -i "$tmpVidFile" -vcodec copy -qscale:v 0 -qscale:a 0 "$2"
+    echo "Mux cleaned audio and video"
+    ffmpeg -v warning -y -i "$tmpAudCleanFile" -i "$tmpVidFile" -strict -2 -vcodec copy -qscale:v 0 -qscale:a 0 "$2"
 else
     cp "$tmpAudCleanFile" "$2"
 fi
